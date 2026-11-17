@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Management Portal</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --teal: #245C62;
+      --teal-dark: #143A3F;
+      --teal-tint: #EEF4F3;
+      --orange: #F79C44;
+      --bg: #FAF8F4;
+      --card: #FFFFFF;
+      --border: #E7E2D8;
+      --text: #1F2A2A;
+      --muted: #6E7877;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      padding: 24px 16px;
+      color: var(--text);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* soft background glows */
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(70px);
+      z-index: 0;
+      pointer-events: none;
+    }
+    body::before {
+      width: 380px; height: 380px;
+      top: -120px; left: -100px;
+      background: rgba(36, 92, 98, 0.16);
+    }
+    body::after {
+      width: 340px; height: 340px;
+      bottom: -120px; right: -90px;
+      background: rgba(247, 156, 68, 0.2);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 460px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 48px 36px 34px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(20, 58, 63, 0.04), 0 18px 50px rgba(20, 58, 63, 0.09);
+      animation: rise 0.6s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 600;
+      font-size: 34px;
+      letter-spacing: -0.5px;
+      color: var(--teal);
+      line-height: 1;
+    }
+    .logo span { color: var(--orange); }
+
+    .eyebrow {
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .icon {
+      width: 72px;
+      height: 72px;
+      margin: 30px auto 22px;
+      border-radius: 20px;
+      background: var(--teal-tint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--teal);
+      position: relative;
+    }
+    .icon::after {
+      content: "";
+      position: absolute;
+      top: -5px; right: -5px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--orange);
+      border: 3px solid var(--card);
+    }
+    .icon svg { width: 34px; height: 34px; }
+
+    h1 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 27px;
+      font-weight: 500;
+      color: var(--teal-dark);
+      margin-bottom: 12px;
+      line-height: 1.25;
+    }
+
+    p.lede {
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: var(--muted);
+      margin: 0 auto 24px;
+      max-width: 360px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 30px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--teal-dark);
+      background: var(--teal-tint);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+    .chip i {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      display: inline-block;
+    }
+
+    .open-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: var(--teal);
+      color: #fff;
+      font-family: inherit;
+      font-size: 15.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 18px rgba(36, 92, 98, 0.28);
+    }
+    .open-btn .arrow { transition: transform 0.2s ease; }
+    .open-btn:hover {
+      background: var(--teal-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(36, 92, 98, 0.32);
+    }
+    .open-btn:hover .arrow { transform: translateX(4px); }
+    .open-btn:active { transform: translateY(0); }
+    .open-btn:focus-visible {
+      outline: 3px solid rgba(247, 156, 68, 0.55);
+      outline-offset: 2px;
+    }
+    .open-btn.loading { pointer-events: none; opacity: 0.85; }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2.5px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .open-btn.loading .spinner { display: inline-block; }
+    .open-btn.loading .arrow { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .notice {
+      display: none;
+      margin-top: 16px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      background: #FDF1E3;
+      border-left: 3px solid var(--orange);
+      color: #8A4B08;
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: left;
+    }
+    .notice.show { display: block; animation: rise 0.3s ease both; }
+
+    .footer {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 11.5px;
+      color: #9AA09F;
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 40px 24px 28px; }
+      h1 { font-size: 24px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+
+    <div class="logo">zouk<span>.</span></div>
+    <div class="eyebrow">D2C Product Team</div>
+
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="3.5" width="14" height="17" rx="2.5"></rect>
+        <path d="M9 3.5h6v2.5a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"></path>
+        <path d="M8.8 12.2l1.6 1.6 3-3"></path>
+        <path d="M8.8 17h6.4"></path>
+      </svg>
+    </div>
+
+    <h1>Request Management Portal</h1>
+
+    <p class="lede">
+      Welcome to the Request Management System.
+      Open the dashboard to track and manage your requests in one place.
+    </p>
+
+    <div class="chips">
+      <span class="chip"><i></i>Live status</span>
+      <span class="chip"><i></i>Email updates</span>
+      <span class="chip"><i></i>Private access</span>
+    </div>
+
+    <button class="open-btn" id="openBtn" onclick="openDashboard()">
+      <span class="spinner"></span>
+      <span class="label">Open Dashboard</span>
+      <span class="arrow">→</span>
+    </button>
+
+    <div class="notice" id="notice" role="alert"></div>
+
+    <div class="footer">
+      Request Management System · Zouk
+    </div>
+
+  </main>
+
+  <script>
+
+    // ==========================================
+    // CHANGE ONLY THIS URL WHENEVER NEEDED
+    // ==========================================
+
+    const APPS_SCRIPT_URL = "https://script.google.com/a/macros/zouk.co.in/s/AKfycbwLXWbOvCwGNZg4c8sszBv6h3jyTXrQ7da9QRviOruIu8kNl3Ou76eWko_PDMQ2BRyu/exec";
+
+    // ==========================================
+
+    function showNotice(message) {
+      const box = document.getElementById("notice");
+      box.textContent = message;
+      box.classList.add("show");
+    }
+
+    function openDashboard() {
+
+      if (
+        !APPS_SCRIPT_URL ||
+        APPS_SCRIPT_URL === "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"
+      ) {
+        showNotice("Please configure the Apps Script URL first.");
+        return;
+      }
+
+      const btn = document.getElementById("openBtn");
+      btn.classList.add("loading");
+      btn.querySelector(".label").textContent = "Opening…";
+
+      window.location.href = APPS_SCRIPT_URL;
+
+    }
+
+  </script>
+
+</body>
+</html>
